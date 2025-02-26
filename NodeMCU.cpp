@@ -45,22 +45,44 @@ void saveWiFiToEEPROM(String newSSID, String newPass) {
 }
 
 // ======== Подключение к Wi-Fi ========
+#include <DNSServer.h>
+#include <ESP8266WebServer.h>
+#include <WiFiManager.h>
+
+// ======== Подключение к Wi-Fi ========
 void connectToWiFi() {
-    WiFi.disconnect();
     WiFi.mode(WIFI_STA);
-    WiFi.begin(ssid.c_str(), password.c_str());
-    Serial.print("Подключение к WiFi...");
-    int attempts = 0;
-    while (WiFi.status() != WL_CONNECTED && attempts < 20) {
+    
+    if (ssid.length() < 2 || password.length() < 8) {  
+        Serial.println("❌ Данные Wi-Fi отсутствуют! Запуск точки доступа...");
+
+        WiFiManager wifiManager;
+        wifiManager.autoConnect("ESP_SETUP");  // SSID точки доступа
+
+        ssid = WiFi.SSID();
+        password = WiFi.psk();
+        saveWiFiToEEPROM(ssid, password);
+        
+        Serial.println("✅ Wi-Fi сохранён, перезапуск...");
         delay(1000);
-        Serial.print(".");
-        attempts++;
-    }
-    if (WiFi.status() == WL_CONNECTED) {
-        Serial.println("\n✅ WiFi подключён!");
-        client.setInsecure();
+        ESP.restart();
     } else {
-        Serial.println("\n❌ Ошибка подключения!");
+        WiFi.begin(ssid.c_str(), password.c_str());
+        Serial.print("Подключение к Wi-Fi...");
+        
+        int attempts = 0;
+        while (WiFi.status() != WL_CONNECTED && attempts < 20) {
+            delay(1000);
+            Serial.print(".");
+            attempts++;
+        }
+
+        if (WiFi.status() == WL_CONNECTED) {
+            Serial.println("\n✅ WiFi подключён!");
+            client.setInsecure();
+        } else {
+            Serial.println("\n❌ Ошибка подключения!");
+        }
     }
 }
 
