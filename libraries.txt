@@ -1,0 +1,11 @@
+📦 Библиотеки для Arduino Uno:
+DHT sensor library
+Adafruit Unified Sensor
+LiquidCrystal I2C
+Wire (уже встроена)
+📦 Библиотеки для NodeMCU ESP8266:
+ESP8266WiFi (уже встроена)
+EEPROM (уже встроена)
+WiFiClientSecure (уже встроена)
+ArduinoJson
+UniversalTelegramBot
